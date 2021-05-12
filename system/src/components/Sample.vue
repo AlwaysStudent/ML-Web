@@ -1,28 +1,28 @@
 <template>
-  <div class="model-box">
+  <div class="sample-box">
     <div class="picture-group">
       <div class="picture-mix-matrix">
         <el-image
-            fit="contain" :src="mixMatrixPictureSrc" :preview-src-list="srcList">
+            fit="contain" :src="beforePictureSrc" :preview-src-list="srcList">
           <div slot="error" class="image-slot"></div>
         </el-image>
       </div>
       <div class="picture-accuracy">
         <el-image
-            fit="contain" :src="accuracyPictureSrc" :preview-src-list="srcList">
+            fit="contain" :src="afterPictureSrc" :preview-src-list="srcList">
           <div slot="error" class="image-slot"></div>
         </el-image>
       </div>
     </div>
     <div class="button">
       <div class="mix-matrix-button">
-        <el-button @click="loadingMixMatrixPicture">
-          加载混淆矩阵
+        <el-button @click="loadingBeforePicture">
+          加载原始数据比
         </el-button>
       </div>
       <div class="accuracy-button">
-        <el-button @click="loadingAccuracyPicture">
-          准确率
+        <el-button @click="loadingAfterPicture">
+          数据采样
         </el-button>
       </div>
     </div>
@@ -30,66 +30,66 @@
 </template>
 
 <script>
-import bus from "../bus/bus"
-import axios from "axios";
+import axios from 'axios'
+import bus from '../bus/bus'
 
 export default {
-  name: "Model",
+  name: "Sample",
   mounted() {
     bus.$on('selectedDataset', (dataset) => {
       this.dataset = dataset
       this.reset()
     })
   },
-  data() {
+  data(){
     return {
       dataset: '',
-      mixMatrixPictureSrc: '',
-      accuracyPictureSrc: '',
-      srcList: []
+      beforePictureSrc: '',
+      afterPictureSrc: '',
+      srcList: [],
     }
   },
   methods: {
     reset() {
-      this.mixMatrixPictureSrc = ''
-      this.accuracyPictureSrc = ''
+      this.beforePictureSrc = ''
+      this.afterPictureSrc = ''
       this.srcList = []
     },
-    async loadingMixMatrixPicture() {
+    async loadingBeforePicture() {
       let config = {
         headers: {
           'Content-Type': 'image/png',
         }
       }
       let res1 = axios.post(
-          'http://127.0.0.1:8888/handle/model',
+          'http://127.0.0.1:8888/handle/sample',
           {
             'data': this.dataset,
-            'picture': 'MixMatrix'
+            'now': 'before'
           },
           config
       )
       res1.then(value => {
-        this.mixMatrixPictureSrc = "data:image/png;base64," + value.data
+        this.beforePictureSrc = "data:image/png;base64," + value.data
         this.srcList.push("data:image/png;base64," + value.data)
       })
     },
-    async loadingAccuracyPicture() {
+    async loadingAfterPicture() {
       let config = {
         headers: {
           'Content-Type': 'image/png',
         }
       }
       let res2 = axios.post(
-          'http://127.0.0.1:8888/handle/model',
+          'http://127.0.0.1:8888/handle/sample',
           {
             'data': this.dataset,
-            'picture': 'Accuracy'
+            'now': 'after'
           },
           config
       )
       res2.then(value => {
-        this.accuracyPictureSrc = "data:image/png;base64," + value.data
+        this.afterPictureSrc = "data:image/png;base64," + value.data
         this.srcList.push("data:image/png;base64," + value.data)
       })
     },
@@ -98,7 +98,7 @@ export default {
 </script>
 
 <style scoped>
-.model-box {
+.sample-box {
   width: 90vw;
   height: 85vh;
 }

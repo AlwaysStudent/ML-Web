@@ -18,7 +18,15 @@
       </el-switch>
     </div>
     <div class="showing-table">
-      <el-table :data="tableData" stripe height="100%">
+      <el-table
+          :data="tableData"
+          stripe
+          height="100%"
+          v-loading="tableLoading"
+          element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
+          :empty-text="emptyText">
         <template v-for="(item, index) in tableLabel">
           <el-table-column :prop="item['prop']" :label="item['label']" :key="index"></el-table-column>
         </template>
@@ -49,11 +57,15 @@ export default {
       ],
       value: '',
       tableData: [],
-      choiceValue: false
+      choiceValue: false,
+      tableLoading: false,
+      emptyText: '等待选择'
     }
   },
   methods: {
     async setDataset() {
+      this.emptyText = '  '
+      this.tableLoading = true
       this.dataSet = this.value
       this.isDatasetSelected = true
       bus.$emit('selectedDataset', this.dataSet)
@@ -76,14 +88,19 @@ export default {
       for (let i = 0;i < res.data.tableData.length;i++) {
         this.tableData.push(JSON.parse(res.data.tableData[i]))
       }
+      this.tableLoading = false
     },
     resetDataset() {
+      this.emptyText = '等待选择'
       this.dataSet = ''
       this.isDatasetSelected = false
       this.tableLabel = []
       this.tableData = []
+      this.choiceValue = false
     },
     async changeChoice() {
+      this.emptyText = '  '
+      this.tableLoading = true
       this.tableLabel = []
       this.tableData = []
       let dataset = ''
@@ -105,6 +122,7 @@ export default {
       for (let i = 0;i < res.data.tableData.length;i++) {
         this.tableData.push(JSON.parse(res.data.tableData[i]))
       }
+      this.tableLoading = false
     }
   }
 }

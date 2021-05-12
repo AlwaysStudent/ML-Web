@@ -3,13 +3,19 @@
     <div class="table-picture">
       <div class="picture">
         <el-image fit="contain" :src="pictureSrc" :preview-src-list="srcList">
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline"></i>
-          </div>
+          <div slot="error" class="image-slot"></div>
         </el-image>
       </div>
       <div class="table">
-        <el-table :data="tableData" stripe height="100%">
+        <el-table
+            :data="tableData"
+            stripe
+            height="100%"
+            v-loading="tableLoading"
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.8)"
+            :empty-text="emptyText">
           <template v-for="(item, index) in tableLabel">
             <el-table-column :prop="item['prop']" :label="item['label']" :key="index"></el-table-column>
           </template>
@@ -40,6 +46,7 @@ export default {
   mounted() {
     bus.$on('selectedDataset', (dataset) => {
       this.dataset = dataset
+      this.reset()
     })
   },
   data() {
@@ -48,11 +55,23 @@ export default {
       pictureSrc: '',
       srcList: [],
       tableLabel: [],
-      tableData: []
+      tableData: [],
+      tableLoading: false,
+      emptyText: '等待加载'
     }
   },
   methods: {
+    reset() {
+      this.pictureSrc = ''
+      this.srcList = []
+      this.tableLabel = []
+      this.tableData = []
+      this.tableLoading = false
+      this.emptyText = '等待加载'
+    },
     async loadingData() {
+      this.tableLoading = true
+      this.emptyText = '  '
       this.tableLabel = []
       this.tableData = []
       console.log(this.dataset)
@@ -67,8 +86,10 @@ export default {
       for (let i = 0;i < res.data.tableData.length;i++) {
         this.tableData.push(JSON.parse(res.data.tableData[i]))
       }
+      this.tableLoading = false
     },
     async loadingPicture() {
+      this.pictureLoading = true
       let config = {
         headers: {
           'Content-Type': 'image/png',
@@ -86,6 +107,7 @@ export default {
         this.srcList = []
         this.srcList.push("data:image/png;base64," + value.data)
       })
+      this.pictureLoading = false
     }
   }
 }
@@ -117,6 +139,10 @@ export default {
   border: #62676c 1px solid;
   margin-left: 4%;
   width: 40%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .loading-button {
   margin-top: 7%;

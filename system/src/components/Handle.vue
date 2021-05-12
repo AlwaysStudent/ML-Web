@@ -21,7 +21,13 @@
       </el-tab-pane>
       <el-tab-pane name="4">
         <span slot="label">
-          <i class="el-icon-loading"></i> 训练模型并预测
+          <i class="el-icon-rank"></i> 数据采样
+        </span>
+        <Sample></Sample>
+      </el-tab-pane>
+      <el-tab-pane name="5">
+        <span slot="label">
+          <i class="el-icon-set-up"></i> 模型训练
         </span>
         <Model></Model>
       </el-tab-pane>
@@ -33,6 +39,7 @@
 import Init from "./Init"
 import PreHandle from "./PreHandle"
 import Select from "./Select"
+import Sample from "./Sample"
 import Model from "./Model"
 
 export default {
@@ -41,6 +48,7 @@ export default {
     Init,
     PreHandle,
     Select,
+    Sample,
     Model
   },
   data() {

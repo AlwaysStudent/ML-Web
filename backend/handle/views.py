@@ -82,3 +82,19 @@ def handle_select_picture(request):
     filename = request_dict['data'] + '.png'
     with open('./public/3/' + filename, 'rb') as f:
         return http.HttpResponse(base64.b64encode(f.read()), content_type='image/png')
+
+
+def handle_sample(request):
+    request_dict = common.handle_request(request)
+    print(request_dict)
+    filename = request_dict['data'] + '_' + request_dict['now'] + '.png'
+    with open('./public/4/' + filename, 'rb') as f:
+        return http.HttpResponse(base64.b64encode(f.read()), content_type='image/png')
+
+
+def handle_model(request):
+    request_dict = common.handle_request(request)
+    print(request_dict)
+    filename = request_dict['data'] + '_' + request_dict['picture'] + '.png'
+    with open('./public/5/' + filename, 'rb') as f:
+        return http.HttpResponse(base64.b64encode(f.read()), content_type='image/png')

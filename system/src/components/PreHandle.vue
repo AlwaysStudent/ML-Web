@@ -10,7 +10,15 @@
       </div>
     </div>
     <div class="showing-table">
-      <el-table :data="tableData" stripe height="100%">
+      <el-table
+          :data="tableData"
+          stripe
+          height="100%"
+          v-loading="tableLoading"
+          element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
+          :empty-text="emptyText">
         <template v-for="(item, index) in tableLabel">
           <el-table-column :prop="item['prop']" :label="item['label']" :key="index"></el-table-column>
         </template>
@@ -29,16 +37,27 @@ export default {
     return {
       dataset: '',
       tableLabel: [],
-      tableData: []
+      tableData: [],
+      tableLoading: false,
+      emptyText: '等待加载'
     }
   },
   mounted() {
     bus.$on('selectedDataset', (dataset) => {
       this.dataset = dataset
+      this.reset()
     })
   },
   methods: {
+    reset(){
+      this.tableLabel = []
+      this.tableData = []
+      this.tableLoading = false
+      this.emptyText = '等待加载'
+    },
     async loadingData() {
+      this.emptyText = '  '
+      this.tableLoading = true
       this.tableLabel = []
       this.tableData = []
       console.log(this.dataset)
@@ -53,6 +72,7 @@ export default {
       for (let i = 0;i < res.data.tableData.length;i++) {
         this.tableData.push(JSON.parse(res.data.tableData[i]))
       }
+      this.tableLoading = false
     }
   }
 }
